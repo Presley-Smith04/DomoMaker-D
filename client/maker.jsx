@@ -9,8 +9,7 @@ const handleDomo = (e, onDomoAdded) => {
 
     const name = e.target.querySelector('#domoName').value;
     const age = e.target.querySelector('#domoAge').value;
-    const nickname = e.target.querySelector('#domoNickname').value; //added nickname field for domoE
-    //the formatting is icky but it works
+    const nickname = e.target.querySelector('#domoNickname').value;
 
     if (!name || !age) {
         helper.handleError('All fields are required');

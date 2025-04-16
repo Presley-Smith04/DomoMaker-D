@@ -43,7 +43,7 @@ const getDomos = async (req, res) => {
     }
 };
 
-const deleteDomo = async (req, res) => { //vaporizing domos
+const deleteDomo = async (req, res) => { 
     try {
         const domoId = req.body.id;
         const deleted = await Domo.deleteOne({ _id: domoId, owner: req.session.account._id });

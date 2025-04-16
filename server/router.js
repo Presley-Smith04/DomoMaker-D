@@ -15,7 +15,7 @@ const router = (app) => {
     app.post('/maker', mid.requiresLogin, controller.Domo.makeDomo);
 
     app.get('/', mid.requiresSecure, mid.requiresLogout, controller.Account.loginPage);
-    app.post('/deleteDomo', mid.requiresLogin, controller.Domo.deleteDomo); //vaporizing domos
+    app.post('/deleteDomo', mid.requiresLogin, controller.Domo.deleteDomo);
 
 };
 
