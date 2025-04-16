@@ -1,5 +1,4 @@
 require('dotenv').config();
-
 const path = require('path');
 const express = require('express');
 const compression = require('compression');
@@ -15,56 +14,58 @@ const redis = require('redis');
 const router = require('./router.js');
 
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
-const dbURI = process.env.MONGODB_URI || 'mongodb://127.0.0.1/DomoMaker';
 
-
-
-mongoose.connect(dbURI).catch((e) => {
-  if (e) {
-    console.log('Could not connect to database');
-    throw e;
-  }
-});
-
-
+const dbURL = process.env.MONGODB_URI || 'mongodb://127.0.0.1/DomoMaker';
+mongoose.connect(dbURL).catch((err) => {
+    if(err) {
+        console.log('Could not connect to database');
+        throw err;
+    }
+})
 
 const redisClient = redis.createClient({
-  url: process.env.REDISCLOUD_URL,
+    url: process.env.REDISCLOUD_URL,
 });
 
-redisClient.on('error', (e) => console.log('Redis Client error', e));
+redisClient.on('error', err => console.log('Redis Client Error', err));
 
 redisClient.connect().then(() => {
-  const app = express();
+    const app = express();
 
-  app.use(helmet());
-  app.use('/assets', express.static(path.resolve(`${__dirname}/../hosted/`)));
-  app.use(favicon(`${__dirname}/../hosted/img/favicon.png`));
-  app.use(compression());
-  app.use(bodyParser.urlencoded({ extended: true }));
-  app.use(bodyParser.json());
+    app.set('trust proxy', 1);
 
-  app.use(session({
-    key: 'sessionID',
-    store: new RedisStore({
-      client: redisClient,
-    }),
-    secret: 'Domo Arigatou',
+app.use(helmet());
+app.use('/assets', express.static(path.resolve(`${__dirname}/../hosted`)));
+app.use(favicon(`${__dirname}/../hosted/img/favicon.png`));
+app.use(compression());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+app.use(session({
+    key: 'sessionId',
+    store: new RedisStore({ client: redisClient }),
+    secret: 'Domo Arigato',
     resave: false,
     saveUninitialized: false,
-  }));
+    cookie: {
+        httpOnly: true,
+        secure: false, 
+        sameSite: 'lax',
+        maxAge: 1000 * 60 * 60 * 24,
+      },
 
-  app.engine('handlebars', expressHandlebars.engine({ defaultLayout: '' }));
-  app.set('view engine', 'handlebars');
-  app.set('views', `${__dirname}/../views`);
+}));
 
-  router(app);
 
-  app.listen(port, (e) => {
-    if (e) {
-      throw e;
-    }
+app.engine('handlebars', expressHandlebars.engine({ defaultLayout: '' }));
+app.set('view engine', 'handlebars');
+app.set('views', `${__dirname}/../views`);
 
+router(app);
+
+
+app.listen(port, (err) => {
+    if (err) { throw err; }
     console.log(`Listening on port ${port}`);
-  });
-});
+})
+})

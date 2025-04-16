@@ -1,79 +1,67 @@
-const mongoose = require('mongoose');
-const _ = require('underscore');
+
 const models = require('../models');
+const Domo = models.Domo;
 
-const { Domo } = models;
-
-const setName = (name) => _.escape(name).trim();
-
-const makerPage = async (req, res) => {
-  try {
-    const query = { owner: req.session.account._id };
-    const docs = await Domo.find(query).select('name age').lean().exec();
-
-    return res.render('app', { domos: docs });
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({ error: 'Error retrieving domos!' });
-  }
+const makerPage = (req, res) => {
+    return res.render('app');
 };
-
-const DomoSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    trim: true,
-    set: setName,
-  },
-  age: {
-    type: Number,
-    min: 0,
-    required: true,
-  },
-  owner: {
-    type: mongoose.Schema.ObjectId,
-    required: true,
-    ref: 'Account',
-  },
-  createdDate: {
-    type: Date,
-    default: Date.now,
-  },
-});
 
 const makeDomo = async (req, res) => {
-  if (!req.body.name || !req.body.age) {
-    return res.status(400).json({ error: 'both name and age required' });
-  }
-
-  const domoData = {
-    name: req.body.name,
-    age: req.body.age,
-    owner: req.session.account._id,
-  };
-
-  try {
-    const newDomo = new Domo(domoData);
-    await newDomo.save();
-    return res.json({ redirect: '/maker' });
-  } catch (err) {
-    console.log(err);
-    if (err.code === 11000) {
-      return res.status(400).json({ error: 'already exists' });
+    if (!req.body.name || !req.body.age) {
+        return res.status(400).json({ error: 'Both fields are required!' });
     }
-    return res.status(500).json({ error: 'error' });
-  }
+
+    const domoData = {
+        name: req.body.name,
+        age: req.body.age,
+        nickname: req.body.nickname || '',
+        owner: req.session.account._id,
+    };
+
+    try {
+        const newDomo = new Domo(domoData);
+        await newDomo.save();
+        return res.status(201).json({ name: newDomo.name, age: newDomo.age, nickname: newDomo.nickname });
+    } catch (err) {
+        console.log(err);
+        if (err.code === 11000) {
+            return res.status(400).json({ error: 'Domo already exists!' });
+        }
+        return res.status(500).json({ error: 'An error occurred' });
+    }
 };
 
-DomoSchema.statics.toAPI = (doc) => ({
-  name: doc.name,
-  age: doc.age,
-});
+const getDomos = async (req, res) => {
+    try {
+        const query = { owner: req.session.account._id };
+        const docs = await Domo.find(query).select('name age nickname').lean().exec();
 
-const DomoModel = mongoose.model('Domo', DomoSchema);
-module.exports = DomoModel;
+        return res.json({ domos: docs });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: 'Error retrieving domos' });
+    }
+};
+
+const deleteDomo = async (req, res) => { //vaporizing domos
+    try {
+        const domoId = req.body.id;
+        const deleted = await Domo.deleteOne({ _id: domoId, owner: req.session.account._id });
+
+        if (deleted.deletedCount === 0) {
+            return res.status(404).json({ error: 'Domo not found' });
+        }
+
+        return res.status(200).json({ message: 'Domo deleted successfully' });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: 'Failed to delete Domo' });
+    }
+};
 
 module.exports = {
-  makerPage,
-  makeDomo,
+    makerPage,
+    makeDomo,
+    getDomos,
+    deleteDomo,
 };
