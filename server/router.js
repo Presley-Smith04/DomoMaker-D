@@ -1,5 +1,6 @@
 const controller = require('./controllers');
 const mid = require('./middleware');
+const { Domo } = require('./models');
 
 const router = (app) => {
     app.get('/getDomos', mid.requiresLogin, controller.Domo.getDomos);
@@ -17,6 +18,8 @@ const router = (app) => {
     app.get('/', mid.requiresSecure, mid.requiresLogout, controller.Account.loginPage);
     app.post('/deleteDomo', mid.requiresLogin, controller.Domo.deleteDomo);
 
+    //update route
+    app.post('/updateDomo', mid.requiresLogin, controller.Domo.updateDomo);
 };
 
 module.exports = router;

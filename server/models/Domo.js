@@ -25,6 +25,11 @@ const DomoSchema = new mongoose.Schema({
     required: true,
     ref: 'Account',
   },
+  mood: {
+    type: String,
+    default: 'neutral',
+    required: true,
+  },
   createdData: {
     type: Date,
     default: Date.now,
