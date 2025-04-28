@@ -42,12 +42,12 @@ const signup = async (req, res) => {
     if (!username || !pass || !pass2) {
         return res.status(400).json({ error: 'All fields are required' });
     }
-    
+
     if (pass !== pass2) {
         return res.status(400).json({ error: 'Passwords do not match' });
     }
 
-    try{
+    try {
         const hash = await Account.generateHash(pass);
         const newAccount = new Account({
             username,
@@ -63,7 +63,20 @@ const signup = async (req, res) => {
         }
         return res.status(500).json({ error: 'An error occurred' });
     }
-}
+};
+
+const togglePremium = async (req, res) => {
+    try {
+        const account = await Account.AccountModel.findById(req.session.account._id);
+        account.premium = !account.premium;
+        await account.save();
+        return res.status(200).json({ premium: account.premium });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: 'Could not toggle premium mode.' });
+    }
+};
+
 
 module.exports = {
     loginPage,
@@ -71,4 +84,5 @@ module.exports = {
     logout,
     login,
     signup,
+    togglePremium,
 }

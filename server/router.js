@@ -1,25 +1,29 @@
 const controller = require('./controllers');
 const mid = require('./middleware');
-const { Domo } = require('./models');
+const { Status } = require('./models');
 
 const router = (app) => {
-    app.get('/getDomos', mid.requiresLogin, controller.Domo.getDomos);
+    app.get('/getStatuses', mid.requiresLogin, controller.Status.getStatuses);
 
+    //status pages
+    app.get('/maker', mid.requiresLogin, controller.Status.makerPage);
+    app.post('/maker', mid.requiresLogin, controller.Status.makeStatus);
+
+    app.post('/deleteStatus', mid.requiresLogin, controller.Status.deleteStatus);
+    app.post('/updateStatus', mid.requiresLogin, controller.Status.updateStatus);
+
+    //account routes
     app.get('/login', mid.requiresSecure, mid.requiresLogout, controller.Account.loginPage);
     app.post('/login', mid.requiresSecure, mid.requiresLogout, controller.Account.login);
-
-    // app.get('/signup', mid.requiresSecure, mid.requiresLogout, controller.Account.signupPage);
     app.post('/signup', mid.requiresSecure, mid.requiresLogout, controller.Account.signup);
-
     app.get('/logout', mid.requiresLogin, controller.Account.logout);
-    app.get('/maker', mid.requiresLogin, controller.Domo.makerPage);
-    app.post('/maker', mid.requiresLogin, controller.Domo.makeDomo);
 
+    //default
     app.get('/', mid.requiresSecure, mid.requiresLogout, controller.Account.loginPage);
-    app.post('/deleteDomo', mid.requiresLogin, controller.Domo.deleteDomo);
 
-    //update route
-    app.post('/updateDomo', mid.requiresLogin, controller.Domo.updateDomo);
+    //premium
+    app.post('/togglePremium', mid.requiresLogin, controller.Account.togglePremium);
+
 };
 
 module.exports = router;
