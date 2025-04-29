@@ -76,7 +76,7 @@ const StatusList = (props) => {
                 props.triggerReload();
             });
         };
-
+    
         return (
             <div key={status._id} className="status">
                 <h3 className="statusUser">{status.username}</h3>
@@ -84,9 +84,11 @@ const StatusList = (props) => {
                 <p className="statusUpdate">"{status.update}"</p>
                 <p className="statusMood">Mood: <strong>{status.mood}</strong></p>
                 <button onClick={handleDelete} className="deleteButton">Delete</button>
+                <button onClick={() => setEditTarget(status)} className="editButton">Edit</button> {/* ✅ ADD THIS */}
             </div>
         );
     });
+    
 
     return (
         <div className="statusList">

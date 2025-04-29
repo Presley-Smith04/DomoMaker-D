@@ -1,6 +1,9 @@
 const models = require('../models');
-const Status = models.Status;
-const Account = models.Account;
+const { Status, Account } = require('../models'); 
+// or if you have models imported like:
+// const models = require('../models');
+// then access it as models.Account
+
 
 
 const makerPage = (req, res) => {
@@ -13,7 +16,7 @@ const makeStatus = async (req, res) => {
         return res.status(400).json({ error: 'All fields are required!' });
     }
 
-    const account = await Account.AccountModel.findById(req.session.account._id);
+    const account = await Account.findById(req.session.account._id);
     const updateWords = req.body.update.trim().split(/\s+/);
     const moodWords = req.body.mood.trim().split(/\s+/);
     const wordLimit = 5;
@@ -34,7 +37,7 @@ const makeStatus = async (req, res) => {
     };
 
     try {
-        const newStatus = new Status(statusData);
+        const newStatus = new Status.StatusModel(statusData);
         await newStatus.save();
 
         return res.status(201).json({ update: newStatus.update, mood: newStatus.mood, emoji: newStatus.emoji, username: newStatus.username });

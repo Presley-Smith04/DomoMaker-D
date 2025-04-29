@@ -24,6 +24,11 @@ const router = (app) => {
     //premium
     app.post('/togglePremium', mid.requiresLogin, controller.Account.togglePremium);
 
+    // profile routes
+    app.get('/profile', mid.requiresLogin, controller.Profile.profilePage);
+    app.post('/profile/username', mid.requiresLogin, controller.Profile.updateUsername);
+    app.post('/profile/password', mid.requiresLogin, controller.Profile.updatePassword);
+
 };
 
 module.exports = router;

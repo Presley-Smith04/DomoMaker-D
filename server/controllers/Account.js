@@ -66,15 +66,17 @@ const signup = async (req, res) => {
 };
 
 const togglePremium = async (req, res) => {
-    try {
-        const account = await Account.AccountModel.findById(req.session.account._id);
-        account.premium = !account.premium;
-        await account.save();
-        return res.status(200).json({ premium: account.premium });
-    } catch (err) {
-        console.log(err);
-        return res.status(500).json({ error: 'Could not toggle premium mode.' });
+    if (!req.session.account) {
+        return res.status(401).json({ error: 'Not logged in' });
     }
+
+    if (req.session.premium) {
+        req.session.premium = false;
+    } else {
+        req.session.premium = true;
+    }
+
+    return res.status(200).json({ premium: req.session.premium });
 };
 
 

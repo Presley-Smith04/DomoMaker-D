@@ -263,3 +263,112 @@ h3.domoAge {
 .domo:last-child {
     margin-bottom:10px;
 }
+
+
+
+
+
+
+
+
+
+.status {
+    width: 95%;
+    margin: 0 auto;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    border: 2px solid #55acee;
+    border-radius: 4px;
+    background-color: #55acee;
+    padding: 10px;
+    min-height: 60px;
+    overflow: hidden;
+}
+
+.status:hover {
+    transition: border-color 0.2s ease-out;
+    border-color: rgba(255,255,255, 0.8);
+    transition: background-color 2.6s ease-out;
+    background-color: #66bfff;
+}
+
+h3.statusName {
+    float: left;
+    width: 200px;
+    font-weight: bold;
+    padding-left: 65px;
+    font-size: 1.5em;
+}
+
+h3.statusAge {
+    float: right;
+    text-align: left;
+    width: 100px;
+    font-weight: bold;
+    padding-right: 40px;
+    font-size: 1.5em;
+}
+
+h4.statusNickname {
+    clear: both;
+    padding-left: 65px;
+    font-size: 1.2em;
+}
+
+h3.statusMood {
+    clear: both;
+    padding-left: 65px;
+    font-size: 1.2em;
+}
+
+button.deleteButton, button.editButton {
+    margin-top: 10px;
+    margin-right: 10px;
+    background-color: white;
+    border: 2px solid #55acee;
+    border-radius: 4px;
+    padding: 5px 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.4s ease;
+}
+
+button.deleteButton:hover, button.editButton:hover {
+    background-color: #66bfff;
+}
+
+
+
+
+
+/* profile.css */
+.profile-container {
+    width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.profile-container input {
+    width: 80%;
+    padding: 8px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.profile-container button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.profile-container button:hover {
+    background-color: #45a049;
+}
