@@ -72,10 +72,9 @@ redisClient.connect().then(() => {
     });
 
     app.listen(port, (err) => {
-        if (err) {
-            console.log('Error starting the server:', err);
-            process.exit(1); 
-        }
-        console.log(`Listening on port ${port}`);
+        const port = process.env.PORT || 3000;
+        app.listen(port, () => {
+            console.log(`Server is running on port ${port}`);
+        });
     });
 });
