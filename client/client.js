@@ -31,6 +31,8 @@ const sendPost = async (url, data) => {
   }
 };
 
+
+
 /* Entry point of our client code. Runs when window.onload fires.
    Sets up the event listeners for each form across the whole app.
 */
@@ -69,6 +71,7 @@ const init = () => {
     });
   }
 
+
   /* If this page has the loginForm, add it's submit event listener.
      Event listener will grab the username, password, from the form, 
      validate both values have been entered, and will use sendPost 
@@ -91,6 +94,8 @@ const init = () => {
       return false;
     });
   }
+
+
 
   /* If this page has the statusForm, add it's submit event listener.
      Event listener will grab the status name and the status age from
@@ -115,6 +120,8 @@ const init = () => {
     });
   }
 };
+
+
 
 // Call init when the window loads.
 window.onload = init;

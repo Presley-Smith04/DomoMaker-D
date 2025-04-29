@@ -10,22 +10,45 @@ const handleStatus = (e, onStatusAdded) => {
     e.preventDefault();
     helper.hideError();
 
+
+    //all status possibilities
     const update = e.target.querySelector('#statusUpdate').value;
     const mood = document.querySelector('#statusMood').value;
     const emoji = e.target.querySelector('#statusEmoji').value;
+    const taglineInput = e.target.querySelector('#statusTagline');
+    const tagline = taglineInput && !taglineInput.disabled ? taglineInput.value : '';
 
+
+    //all are required
     if (!update || !mood || !emoji) {
         helper.handleError('All fields are required');
         return false;
     }
 
-    helper.sendPost(e.target.action, { update, mood, emoji }, onStatusAdded);
+
+    //send
+    helper.sendPost(e.target.action, { update, mood, emoji, tagline }, onStatusAdded);
     return false;
 };
 
 
 
+
 const StatusForm = (props) => {
+    //check for premium
+    const [isPremium, setIsPremium] = useState(false);
+
+    useEffect(() => {
+        const checkPremium = async () => {
+            const res = await fetch('/profile');
+            const data = await res.json();
+            setIsPremium(data.premium);
+        };
+        checkPremium();
+    }, []);
+
+
+    //status form
     return (
         <form id="statusForm"
             onSubmit={(e) => handleStatus(e, props.triggerReload)}
@@ -35,7 +58,7 @@ const StatusForm = (props) => {
             className="statusForm"
         >
             <label htmlFor="update">Status Update: </label>
-            <input id="statusUpdate" type="text" name="update" placeholder="Whats going on?" />
+            <input id="statusUpdate" type="text" name="update" placeholder="What's going on?" />
 
             <label htmlFor="mood">Mood: </label>
             <input id="statusMood" type="text" name="mood" placeholder="Feeling?" />
@@ -43,16 +66,29 @@ const StatusForm = (props) => {
             <label htmlFor="emoji">Emoji: </label>
             <input id="statusEmoji" type="text" name="emoji" placeholder="emoji" maxLength="2" />
 
+            <label htmlFor="tagline">Tagline: </label>
+            <input
+                id="statusTagline"
+                type="text"
+                name="tagline"
+                placeholder={isPremium ? "Optional tagline..." : "Tagline (premium only)"}
+                disabled={!isPremium}
+            />
+
             <input className="makeStatusSubmit" type="submit" value="Post Status" />
         </form>
     );
 };
 
+
 const StatusList = (props) => {
+    //already made statuses
     const [statuses, setStatuses] = useState(props.statuses);
 
     const [editTarget, setEditTarget] = useState(null);
 
+
+    //get from server
     useEffect(() => {
         const loadStatusesFromServer = async () => {
             const response = await fetch('/getStatuses');
@@ -62,6 +98,8 @@ const StatusList = (props) => {
         loadStatusesFromServer();
     }, [props.reloadStatuses]);
 
+
+    //if none, show none
     if (statuses.length === 0) {
         return (
             <div className="statusList">
@@ -70,26 +108,29 @@ const StatusList = (props) => {
         );
     }
 
+    //handle deletion
     const statusNodes = statuses.map(status => {
         const handleDelete = async () => {
             await helper.sendDelete('/deleteStatus', { id: status._id }, () => {
                 props.triggerReload();
             });
         };
-    
+
+         //status form
         return (
-            <div key={status._id} className="status">
+            <div key={status._id} className="status" >
                 <h3 className="statusUser">{status.username}</h3>
                 <p className="statusEmoji" style={{ fontSize: '2rem' }}>{status.emoji}</p>
                 <p className="statusUpdate">"{status.update}"</p>
                 <p className="statusMood">Mood: <strong>{status.mood}</strong></p>
                 <button onClick={handleDelete} className="deleteButton">Delete</button>
-                <button onClick={() => setEditTarget(status)} className="editButton">Edit</button> {/* ✅ ADD THIS */}
+                <button onClick={() => setEditTarget(status)} className="editButton">Edit</button> {}
             </div>
         );
     });
-    
 
+
+    //status form edit
     return (
         <div className="statusList">
             {statusNodes}
@@ -135,9 +176,13 @@ const StatusList = (props) => {
     );
 };
 
+
+//app
 const App = () => {
     const [reloadStatuses, setReloadStatuses] = useState(false);
 
+
+    //statuses and premium toggle
     return (
         <div>
             <div id="makeStatus">
@@ -158,9 +203,13 @@ const App = () => {
     );
 };
 
+
+//initialize
 const init = () => {
     const root = createRoot(document.getElementById('app'));
     root.render(<App />);
 };
 
 window.onload = init;
+
+

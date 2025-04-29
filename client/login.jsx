@@ -2,13 +2,18 @@ const helper = require('./helper.js');
 const React = require('react');
 const { createRoot } = require('react-dom/client');
 
+
+//handle login
 const handleLogin = (e) => {
     e.preventDefault();
     helper.hideError();
 
+    //username and pass
     const username = e.target.querySelector('#user').value;
     const pass = e.target.querySelector('#pass').value;
 
+
+    //not filled
     if (!username || !pass) {
         helper.handleError('Username or password is empty');
         return false;
@@ -18,19 +23,27 @@ const handleLogin = (e) => {
     return false;
 };
 
+
+//signup
 const handleSignup = (e) => {
     e.preventDefault();
     helper.hideError();
 
+
+    //username/pass
     const username = e.target.querySelector('#user').value;
     const pass = e.target.querySelector('#pass').value;
     const pass2 = e.target.querySelector('#pass2').value;
 
+
+    //all fiels required
     if (!username || !pass || !pass2) {
         helper.handleError('All fields are required');
         return false;
     }
 
+
+    //passwords need to match
     if (pass !== pass2) {
         helper.handleError('Passwords do not match');
         return false;
@@ -40,7 +53,10 @@ const handleSignup = (e) => {
     return false;
 }
 
+
+//login
 const LoginWindow = (props) => {
+    //form for loggin in
     return (
         <form id="loginForm"
             name="loginForm"
@@ -58,7 +74,10 @@ const LoginWindow = (props) => {
     );
 };
 
+
+//signup
 const SignupWindow = (props) => {
+    //signup form
     return (
         <form id="signupForm"
             name="signupForm"
@@ -78,7 +97,10 @@ const SignupWindow = (props) => {
     );
 }
 
+
+
 const init = () => {
+    //setup buttons and listeners
     const loginButton = document.getElementById('loginButton');
     const signupButton = document.getElementById('signupButton');
 
@@ -98,5 +120,7 @@ const init = () => {
 
     root.render(<LoginWindow />);
 };
+
+
 
 window.onload = init;

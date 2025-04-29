@@ -5,6 +5,7 @@ const _ = require('underscore');
 const setName = (name) => _.escape(name).trim();
 
 
+//status schema
 const StatusSchema = new mongoose.Schema({
   owner: {
     type: mongoose.Schema.ObjectId,
@@ -33,6 +34,10 @@ const StatusSchema = new mongoose.Schema({
   createdDate: {
     type: Date,
     default: Date.now,
+  },
+  tagline: {
+    type: String,
+    default: '',
   },
 });
 

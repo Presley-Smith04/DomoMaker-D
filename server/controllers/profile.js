@@ -1,4 +1,6 @@
 const Account = require('../models/Account');
+const bcrypt = require('bcrypt');
+
 
 //render the profile pageS]
 module.exports.profilePage = (req, res) => {
@@ -32,34 +34,32 @@ module.exports.updateUsername = async (req, res) => {
 
 //handle password update
 module.exports.updatePassword = async (req, res) => {
-    const userId = req.session.account._id;
-    const { currentPassword, newPassword } = req.body;
-
     try {
-        //look for account
-        const account = await Account.findById(userId);
-
-        if (!account) {
-            return res.status(404).send('Account not found.');
+      const { currentPassword, newPassword } = req.body;
+  
+      //find account
+        const account = await Account.findById(req.session.account._id);
+  
+      //authenticate and verify
+      Account.authenticate(account.username, currentPassword, async (err, doc) => {
+        if (err) {
+          return res.status(500).send('Error verifying current password');
         }
-
-        //verify passwords
-        const isMatch = await Account.verifyPassword(currentPassword);
-
-        if (!isMatch) {
-            //dont let new password = old password
-            return res.status(400).send('Incorrect current password.');
+  
+        if (!doc) {
+          return res.status(400).send('Incorrect current password');
         }
-
-
-        //save info
-        await Account.setPassword(newPassword);
-
+  
+        //hash new pass
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        account.password = hashedPassword;
         await account.save();
-
-        res.redirect('/profile');
-    } catch (err) {
-        console.error('Error updating password:', err);
-        return res.status(500).send('Error updating password.');
+  
+        res.send('Password updated successfully');
+      });
+  
+    } catch (error) {
+      console.error('Error updating password:', error);
+      res.status(500).send('Error updating password');
     }
-};
+  };

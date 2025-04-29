@@ -1,6 +1,8 @@
 const models = require('../models');
 const Account = models.Account;
 
+
+//login
 const loginPage = (req, res) => {
     return res.render('login');
 };
@@ -9,11 +11,15 @@ const loginPage = (req, res) => {
 //     return res.render('signup');
 // }
 
+
+//logout function
 const logout = (req, res) => {
     req.session.destroy();
     return res.redirect('/');
 };
 
+
+//login
 const login = (req, res) => {
     const username = `${req.body.username}`;
     const pass = `${req.body.pass}`;
@@ -34,20 +40,27 @@ const login = (req, res) => {
 
 }
 
+
+//signup
 const signup = async (req, res) => {
+    //name/pass
     const username = `${req.body.username}`;
     const pass = `${req.body.pass}`;
     const pass2 = `${req.body.pass2}`;
 
+
+    //all fields required
     if (!username || !pass || !pass2) {
         return res.status(400).json({ error: 'All fields are required' });
     }
 
+    //pass have to match
     if (pass !== pass2) {
         return res.status(400).json({ error: 'Passwords do not match' });
     }
 
     try {
+        //hash password
         const hash = await Account.generateHash(pass);
         const newAccount = new Account({
             username,
@@ -65,19 +78,20 @@ const signup = async (req, res) => {
     }
 };
 
+
+//is premium on?
 const togglePremium = async (req, res) => {
-    if (!req.session.account) {
-        return res.status(401).json({ error: 'Not logged in' });
+    try {
+        const account = await Account.findById(req.session.account._id);
+        account.premium = !account.premium;
+        await account.save();
+        return res.status(200).json({ premium: account.premium });
+    } catch (err) {
+        console.error('Error toggling premium:', err);
+        return res.status(500).json({ error: 'Failed to toggle premium status' });
     }
-
-    if (req.session.premium) {
-        req.session.premium = false;
-    } else {
-        req.session.premium = true;
-    }
-
-    return res.status(200).json({ premium: req.session.premium });
 };
+
 
 
 module.exports = {
