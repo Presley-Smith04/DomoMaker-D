@@ -1,4 +1,4 @@
-// all initial required imports, requirements, etc.
+//all initial required imports, requirements, etc.
 require('dotenv').config();
 const path = require('path');
 const express = require('express');
@@ -14,10 +14,10 @@ const redis = require('redis');
 
 const router = require('./router.js');
 
-// port 3000
+//port 3000
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
-// link to mongoDB/mongoose
+//link to mongoDB/mongoose
 const dbURL = process.env.MONGODB_URI || 'mongodb://127.0.0.1/StatusMaker';
 
 mongoose.connect(dbURL).then(() => {
@@ -26,14 +26,14 @@ mongoose.connect(dbURL).then(() => {
     console.log('Could not connect to MongoDB:', err.message);
 });
 
-// connect to redis
+//connect to redis
 const redisClient = redis.createClient({
     url: process.env.REDISCLOUD_URL,
 });
 
 redisClient.on('error', (err) => console.log('Redis Client Error', err));
 
-// redis connections
+//redis connections
 redisClient.connect().then(() => {
     const app = express();
 
@@ -66,7 +66,7 @@ redisClient.connect().then(() => {
 
     router(app);
 
-    // 404 response
+    //404 response
     app.use((req, res) => {
         res.status(404).render('404', { title: 'Page Not Found' });
     });
@@ -74,7 +74,7 @@ redisClient.connect().then(() => {
     app.listen(port, (err) => {
         if (err) {
             console.log('Error starting the server:', err);
-            process.exit(1);  // Ensure the process exits on server startup failure
+            process.exit(1); 
         }
         console.log(`Listening on port ${port}`);
     });
